@@ -23,7 +23,7 @@ for file in files:
         
     ans = a.jump_rope_count()  
     print('\ntime :{}\n'.format(ans))
-    f = a.make_flag()
+    #f = a.make_flag()
 
     student.make_output_vidoe(output_path,f)
 

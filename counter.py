@@ -6,7 +6,7 @@ class Body_point:
 
     def __init__(self,post_df = pd.DataFrame ,point = 11):
         
-        self.data = post_df[int(point+33)]
+        self.data = post_df[point+33]
         self.frame_num = len(self.data)
         self.frame = range(self.frame_num)
         self.var = 2.5
