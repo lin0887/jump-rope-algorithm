@@ -21,14 +21,16 @@ def judgment_grade(data):
         return None
 
 def student():
-    df = pd.read_json('..\\Backend\\contestants.json')
+    df = pd.read_json('..\\jumpBackend\\contestants.json')
+    df.rename (columns={"contest":"項目","group":"組別", "grade":"年級", "school":"學校", "name":"姓名", "teacher":"指導老師" , "id":"編號","score":"成績" },inplace=True)
+    
     for i in range( len(df) ):
         k = judgment_grade(df.loc[i,:])
         df.loc[i , '等第'] = k
         
     df.to_excel('..\\名單\\112跳繩各校學生成績.xlsx',index=False)
     
-    df.drop(columns=['組別','成績','ID'])
+    df.drop(columns=['組別','成績','編號'])
     
     new_order = ['年級', '學校', '項目', '等第', '姓名', '指導老師']
     df = df.reindex(columns=new_order)
@@ -66,7 +68,7 @@ def teacher():
     new_df = pd.DataFrame(new_rows, columns=df.columns)
     
     # 製作輸出格式
-    new_df.drop(columns=['組別','成績','ID'])
+    new_df.drop(columns=['組別','成績','編號'])
     new_order = ['年級', '學校', '項目', '等第', '姓名', '指導老師']
     new_df = new_df.reindex(columns=new_order)
     new_df.columns = ['參賽組別', '單位', '項目', '成績', '優秀選手', '指導老師']
@@ -76,8 +78,7 @@ def teacher():
     new_df.to_excel('..\\名單\\112跳繩各校老師獎狀.xlsx',index=False)
     
 if __name__ == '__main__':
-    check()
-    #student()
+    student()
     teacher()
     
     

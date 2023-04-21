@@ -46,7 +46,7 @@ class MyHandler(FileSystemEventHandler):
         print('\nid :{} time :{}\n'.format(id,ans))
         
         df = pd.read_json('..\\Backend\\contestants.json')
-        df.loc[df['ID'] == id, '成績'] = ans
+        df.loc[df['id'] == id, 'socre'] = ans
         df.to_json('..\\Backend\\contestants.json',orient='records')
         
         flag = a.make_flag()
