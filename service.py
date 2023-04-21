@@ -45,9 +45,9 @@ class MyHandler(FileSystemEventHandler):
         ans = a.jump_rope_count()  
         print('\nid :{} time :{}\n'.format(id,ans))
         
-        score = pd.read_json('score.js')
-        score.loc[len(score), :] = [id,int(ans)]
-        score.to_json('score.js',orient='records')
+        df = pd.read_json('..\\Backend\\contestants.json')
+        df.loc[df['ID'] == id, '成績'] = ans
+        df.to_json('..\\Backend\\contestants.json',orient='records')
         
         flag = a.make_flag()
         df = pd.DataFrame(flag)
