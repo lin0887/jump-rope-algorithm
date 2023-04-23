@@ -53,8 +53,8 @@ class Post_dection:
                        
                 print('\rprocess: {}/{}'.format(idx+1,totle_frames), end = ' ')
                 idx += 1
-        
-        pose_landmark_df = pd.DataFrame(pose_landmark_data)
+        col = [i for i in range(99)]
+        pose_landmark_df = pd.DataFrame(pose_landmark_data,columns = col)
         return pose_landmark_df
             
     def make_output_vidoe(self,output_path,flag):  
@@ -118,7 +118,7 @@ class Post_dection:
     
 if __name__ == '__main__':
     
-    video = '.\\A1102.MOV'
+    video = '..\\input\\11001.MOV'
     a = Post_dection(video)
     b = a.dection()
     

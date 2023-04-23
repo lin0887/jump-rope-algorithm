@@ -1,33 +1,94 @@
 import pandas as pd
 import os
+from openpyxl import Workbook
 
 def judgment_grade(data):
-    grade_award_map = {
-        '一年級': {50: '金質獎', 40: '銀質獎', 30: '銅質獎'},
-        '二年級': {80: '金質獎', 60: '銀質獎', 40: '銅質獎'},
-        '三年級': {95: '金質獎', 90: '銀質獎', 85: '銅質獎'},
-        '四年級': {100: '金質獎', 95: '銀質獎', 90: '銅質獎'},
-        '五年級': {50: '金質獎', 45: '銀質獎', 40: '銅質獎'},
-        '六年級': {55: '金質獎', 50: '銀質獎', 45: '銅質獎'},
-        '推廣組': {70: '金質獎', 50: '銀質獎', 30: '銅質獎'},
-        '特教組': {70: '金質獎', 50: '銀質獎', 30: '銅質獎'}
-    }
-    grade = data['年級']
-    score = data['成績']
     
-    if grade in grade_award_map and score in grade_award_map[grade]:
-        return grade_award_map[grade][score]
-    else:
-        return None
-
+    match data['grade']:
+        case '一年級':
+            if data['score'] >= 50:
+                return '金質獎'
+            elif data['score'] >= 40:
+                return '銀質獎'
+            elif data['score']>= 30:
+                return '銅質獎'
+            else:
+                return None
+        case '二年級':
+            if data['score'] >= 80:
+                return '金質獎'
+            elif data['score'] >= 60:
+                return '銀質獎'
+            elif data['score']>= 40:
+                return '銅質獎'
+            else:
+                return None
+        case '三年級':
+            if data['score'] >= 95:
+                return '金質獎'
+            elif data['score'] >= 90:
+                return '銀質獎'
+            elif data['score']>= 85:
+                return '銅質獎'
+            else:
+                return None
+        case '四年級':
+            if data['score'] >= 100:
+                return '金質獎'
+            elif data['score'] >= 95:
+                return '銀質獎'
+            elif data['score']>= 90:
+                return '銅質獎'
+            else:
+                return None
+        case '五年級':
+            if data['score'] >= 50:
+                return '金質獎'
+            elif data['score'] >= 45:
+                return '銀質獎'
+            elif data['score']>= 40:
+                return '銅質獎'
+            else:
+                return None
+        case '六年級':
+            if data['score'] >= 55:
+                return '金質獎'
+            elif data['score'] >= 50:
+                return '銀質獎'
+            elif data['score']>= 45:
+                return '銅質獎'
+            else:
+                return None
+        case '推廣組':
+            if data['score'] >= 70:
+                return '金質獎'
+            elif data['score'] >= 50:
+                return '銀質獎'
+            elif data['score']>= 30:
+                return '銅質獎'
+            else:
+                return None
+        case '特教組':
+            if data['score'] >= 70:
+                return '金質獎'
+            elif data['score'] >= 50:
+                return '銀質獎'
+            elif data['score']>= 30:
+                return '銅質獎'
+            else:
+                return None
+    
 def student():
     df = pd.read_json('..\\jumpBackend\\contestants.json')
-    df.rename (columns={"contest":"項目","group":"組別", "grade":"年級", "school":"學校", "name":"姓名", "teacher":"指導老師" , "id":"編號","score":"成績" },inplace=True)
     
+    #print(len(df))
     for i in range( len(df) ):
         k = judgment_grade(df.loc[i,:])
         df.loc[i , '等第'] = k
-        
+    
+    
+    df.rename (columns={"contest":"項目","group":"組別", "grade":"年級", "school":"學校", "name":"姓名", "teacher":"指導老師" , "id":"編號","score":"成績","等第":"等第" },inplace=True)    
+    
     df.to_excel('..\\名單\\112跳繩各校學生成績.xlsx',index=False)
     
     df.drop(columns=['組別','成績','編號'])
@@ -39,7 +100,7 @@ def student():
     df.dropna(subset=['成績'], inplace=True)
     df['項目']=['單人繩' for i in range(len(df))]    
     df['參賽組別'] = df['參賽組別'].apply(lambda x: x + '組')     
-          
+    
     df.to_excel('..\\名單\\112跳繩各校學生獎狀.xlsx',index=False)
     
 def teacher():
@@ -76,9 +137,34 @@ def teacher():
     new_df['參賽組別'] = new_df['參賽組別'].apply(lambda x: x + '組') 
     
     new_df.to_excel('..\\名單\\112跳繩各校老師獎狀.xlsx',index=False)
-    
+
+def make_sheet():
+    # 讀取資料並分組
+    df = pd.read_excel('..\\名單\\112跳繩各校學生成績.xlsx')
+   
+    groups = df.groupby('學校')
+
+    # 建立新的 Excel 檔案
+    wb = Workbook()
+
+    # 將每個分組寫入不同工作表中
+    for school, group in groups:
+        sheet_name = f'{school[0]+school[1]}'
+        print(school[0]+school[1])
+        ws = wb.create_sheet(sheet_name)
+        ws.append(group.columns.tolist())
+        for row in group.iterrows():
+            ws.append(list(row[1]))
+
+    if 'Sheet' in wb.sheetnames:
+        sheet = wb['Sheet']
+        wb.remove(sheet)
+
+    wb.save('..\\名單\\112跳繩各校學生成績-分類版.xlsx')
+
 if __name__ == '__main__':
     student()
     teacher()
+    make_sheet()
     
     

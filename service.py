@@ -30,24 +30,26 @@ class MyHandler(FileSystemEventHandler):
         print(f"對 {file_path} 進行特定運算...")
         
         input_path = file_path
+        #print(input_path)
         file = file_path.split('\\')[-1]
         output_path = '..\\output\\'+file
         id = file.split('.')[0]
         
         student = post.Post_dection(input_path)
         post_df = student.dection()
-
+        post_df.to_csv('t.csv')
         a = counter.Body_point(post_df)
         for i in range(2):
             a.get_amplitude()
             a.get_wavelength()
-            
+        
         ans = a.jump_rope_count()  
         print('\nid :{} time :{}\n'.format(id,ans))
         
-        df = pd.read_json('..\\Backend\\contestants.json')
-        df.loc[df['id'] == id, 'socre'] = ans
-        df.to_json('..\\Backend\\contestants.json',orient='records')
+        df = pd.read_json('..\\jumpBackend\\contestants.json')
+
+        df.loc[df['id'] == int(id), 'score'] = ans
+        df.to_json('..\\jumpBackend\\contestants.json',orient='records')
         
         flag = a.make_flag()
         df = pd.DataFrame(flag)
