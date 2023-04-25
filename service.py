@@ -6,6 +6,7 @@ import subprocess
 import post
 import counter
 import pandas as pd
+import logging
 
 if os.path.isdir('..\\flag\\') != True:
     os.system("mkdir {}".format('..\\flag\\'))
@@ -33,30 +34,33 @@ class MyHandler(FileSystemEventHandler):
         #print(input_path)
         file = file_path.split('\\')[-1]
         output_path = '..\\output\\'+file
-        id = file.split('.')[0]
+        student_id = int(file.split('.')[0])
+        logging.basicConfig(filename='myservice.log', level=logging.ERROR)
         
-        student = post.Post_dection(input_path)
-        post_df = student.dection()
-        post_df.to_csv('t.csv')
-        a = counter.Body_point(post_df)
-        for i in range(2):
-            a.get_amplitude()
-            a.get_wavelength()
-        
-        ans = a.jump_rope_count()  
-        print('\nid :{} time :{}\n'.format(id,ans))
-        
-        df = pd.read_json('..\\jumpBackend\\contestants.json')
+        try:    
+            student = post.Post_dection(input_path)
+            post_df = student.dection()
+            a = counter.Body_point(post_df)
+            for i in range(2):
+                a.get_amplitude()
+                a.get_wavelength()
+            
+            ans = a.jump_rope_count()  
+            print('\nid :{} time :{}\n'.format(student_id,ans))
+            
+            df = pd.read_json('..\\jumpBackend\\contestants.json')
 
-        df.loc[df['id'] == int(id), 'score'] = ans
-        df.to_json('..\\jumpBackend\\contestants.json',orient='records')
+            df.loc[df['id'] == student_id, 'score'] = ans
+            df.to_json('..\\jumpBackend\\contestants.json',orient='records')
+            
+            flag = a.make_flag()
+            df = pd.DataFrame(flag)
+            df.to_csv('..\\flag\\'+str(student_id)+'.csv',index=False)
+                
+            #student.make_output_vidoe(output_path,flag)
+        except :
+            logging.error(str(student_id)+' have error ')
         
-        flag = a.make_flag()
-        df = pd.DataFrame(flag)
-        df.to_csv('..\\flag\\'+id+'.csv',index=False)
-        
-        #student.make_output_vidoe(output_path,flag)
-
 def monitor_folder(folder_to_monitor):
     executed_files = set()
     event_handler = MyHandler(folder_to_monitor, executed_files)
